@@ -16,14 +16,16 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name="cursos")
-public class Curso {
+public class Curso implements Serializable{
     
     @Id //definir PK
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
+    private String codigo; // Adicionado para bater com o txtCodigo do form
     private String nome;
-    private String descricao;
+    private int cargaHoraria;
+    private boolean ativo;
 
     public long getId() {
         return id;
@@ -31,6 +33,14 @@ public class Curso {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     public String getNome() {
@@ -41,13 +51,21 @@ public class Curso {
         this.nome = nome;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public int getCargaHoraria() {
+        return cargaHoraria;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setCargaHoraria(int cargaHoraria) {
+        this.cargaHoraria = cargaHoraria;
     }
-    
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
     
 }

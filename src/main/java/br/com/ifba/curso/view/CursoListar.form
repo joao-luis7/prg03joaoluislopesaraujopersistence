@@ -49,11 +49,11 @@
                   <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
-                          <Component id="jTextField1" min="-2" pref="119" max="-2" attributes="0"/>
+                          <Component id="txtPesquisa" min="-2" pref="119" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="155" max="-2" attributes="0"/>
-                          <Component id="jButton1" min="-2" pref="131" max="-2" attributes="0"/>
+                          <Component id="btnAdd" min="-2" pref="131" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
-                          <Component id="jButton2" min="-2" pref="120" max="-2" attributes="0"/>
+                          <Component id="btnHomescreen" min="-2" pref="120" max="-2" attributes="0"/>
                       </Group>
                       <Component id="pnlTabela" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -66,9 +66,9 @@
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace pref="31" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="jButton1" min="-2" max="-2" attributes="0"/>
-                      <Component id="jTextField1" alignment="1" min="-2" pref="35" max="-2" attributes="0"/>
-                      <Component id="jButton2" alignment="1" min="-2" pref="43" max="-2" attributes="0"/>
+                      <Component id="btnAdd" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtPesquisa" alignment="1" min="-2" pref="35" max="-2" attributes="0"/>
+                      <Component id="btnHomescreen" alignment="1" min="-2" pref="43" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="pnlTabela" min="-2" max="-2" attributes="0"/>
@@ -103,9 +103,10 @@
                 <Component class="javax.swing.JTable" name="tblTabela">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="4" rowCount="6">
+                      <Table columnCount="5" rowCount="6">
                         <Column editable="false" title="NOME CURSO" type="java.lang.Object"/>
-                        <Column editable="false" title="DESCRI&#xc7;&#xc3;O" type="java.lang.Object"/>
+                        <Column editable="false" title="CARGA HOR&#xc1;RIA" type="java.lang.Object"/>
+                        <Column editable="false" title="ATIVO" type="java.lang.Boolean"/>
                         <Column editable="false" title="REMOVER" type="java.lang.Object"/>
                         <Column editable="false" title="EDITAR" type="java.lang.Object"/>
                       </Table>
@@ -119,7 +120,7 @@
             </Container>
           </SubComponents>
         </Container>
-        <Component class="javax.swing.JButton" name="jButton1">
+        <Component class="javax.swing.JButton" name="btnAdd">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="4c" green="0" red="0" type="rgb"/>
@@ -129,20 +130,20 @@
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAddActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="jButton2">
+        <Component class="javax.swing.JButton" name="btnHomescreen">
           <Properties>
             <Property name="text" type="java.lang.String" value="Homescreen"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="jTextField1">
+        <Component class="javax.swing.JTextField" name="txtPesquisa">
           <Properties>
             <Property name="text" type="java.lang.String" value="Procurar..."/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField1ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtPesquisaActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

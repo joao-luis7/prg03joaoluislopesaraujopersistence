@@ -5,6 +5,15 @@
 package br.com.ifba.curso.view;
 
 import javax.swing.ImageIcon;
+import br.com.ifba.CursoFindAll;
+import br.com.ifba.CursoDelete;
+import br.com.ifba.CursoFind;
+import br.com.ifba.curso.entity.Curso;
+import java.util.List;
+import javax.swing.JOptionPane;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -17,7 +26,32 @@ public class CursoListar extends javax.swing.JFrame {
     
     public CursoListar() {
         initComponents();
-        carregarDadosNaTabela();
+        
+        tblTabela.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                int linha = tblTabela.getSelectedRow();
+                int coluna = tblTabela.getSelectedColumn();
+                
+                // 1. Obter a lista de cursos para saber qual objeto corresponde à linha clicada
+                List<Curso> listaCursos = new br.com.ifba.CursoFindAll().listarTodos();
+                Curso cursoSelecionado = listaCursos.get(linha);
+
+                // 2. Lógica baseada na coluna clicada (índices 3 e 4 na nova estrutura)
+                if (coluna == 3) { // Coluna REMOVER
+                    int confirm = javax.swing.JOptionPane.showConfirmDialog(null, 
+                            "Deseja remover o curso: " + cursoSelecionado.getNome() + "?");
+                    if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+                        new br.com.ifba.CursoDelete().remover(cursoSelecionado.getId());
+                        carregarDados(); // Atualiza a tabela
+                    }
+                } else if (coluna == 4) { // Coluna EDITAR
+                    new CursoAtualizar(cursoSelecionado, CursoListar.this).setVisible(true);
+                }
+            }
+        });
+        
+        carregarDados();
     }
     
     // carrega os icones originais e já os redimensiona para 32x32
@@ -30,35 +64,47 @@ public class CursoListar extends javax.swing.JFrame {
         java.awt.Image imagemRedimensionada = iconeOriginal.getImage().getScaledInstance(largura, altura, java.awt.Image.SCALE_SMOOTH);
         return new ImageIcon(imagemRedimensionada);
     }
-    private void carregarDadosNaTabela(){
-        
-        //coloca dados na tabela
-        String[] colunas = {"NOME CURSO", "DESCRIÇÃO", "REMOVER", "EDITAR"};
-        Object[][] dados = {
-            {"ADS", "Análise e Desenvolvimento de SIstemas", iconeLixeira, iconeEditar},
-        };
-        //cria modelo da tabela 
-        javax.swing.table.DefaultTableModel modelo = new javax.swing.table.DefaultTableModel(dados, colunas) {
+    
+    public void carregarDados() {
+        String[] colunas = {"NOME CURSO", "CARGA HORÁRIA", "ATIVO", "REMOVER", "EDITAR"};
+
+        DefaultTableModel modelo = new DefaultTableModel(null, colunas) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Mantém a tabela não editável diretamente nas células
+            }
+
             @Override
             public Class<?> getColumnClass(int columnIndex) {
-                // A primeira coluna é 0. Então Remover é 2 e Editar é 3.
-                //  tratar essas colunas como Ícones.
-                if (columnIndex == 2 || columnIndex == 3) {
-                    return javax.swing.Icon.class;
+                switch (columnIndex) {
+                    case 2: return Boolean.class;          // Coluna ATIVO (Checkbox)
+                    case 3: 
+                    case 4: return javax.swing.Icon.class; // Colunas REMOVER e EDITAR (Ícones)
+                    default: return super.getColumnClass(columnIndex);
                 }
-                // para as outras colunas, mantém o padrão (texto)
-                return super.getColumnClass(columnIndex);
             }
         };
-        
-        //Aplicar moedelo na tabela
-        tblTabela.setModel(modelo);
-        
-        //aumenta autura das linhas
-        tblTabela.setRowHeight(40);
-        
-    }
 
+        try {
+            List<Curso> lista = new CursoFindAll().listarTodos();
+            for (Curso c : lista) {
+                modelo.addRow(new Object[]{
+                    c.getNome(), 
+                    c.getCargaHoraria(), // Atributo que você deve adicionar na classe Curso
+                    c.isAtivo(),         // Atributo que você deve adicionar na classe Curso
+                    iconeLixeira, 
+                    iconeEditar
+                });
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar: " + e.getMessage());
+        }
+
+        tblTabela.setModel(modelo);
+        tblTabela.setRowHeight(40);
+    }
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -87,29 +133,36 @@ public class CursoListar extends javax.swing.JFrame {
         pnlTabela = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblTabela = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        btnAdd = new javax.swing.JButton();
+        btnHomescreen = new javax.swing.JButton();
+        txtPesquisa = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setForeground(new java.awt.Color(102, 255, 102));
 
         tblTabela.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "NOME CURSO", "DESCRIÇÃO", "REMOVER", "EDITAR"
+                "NOME CURSO", "CARGA HORÁRIA", "ATIVO", "REMOVER", "EDITAR"
             }
         ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
@@ -128,14 +181,14 @@ public class CursoListar extends javax.swing.JFrame {
             .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE)
         );
 
-        jButton1.setBackground(new java.awt.Color(0, 0, 76));
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icons8-adicionar-50.png"))); // NOI18N
-        jButton1.addActionListener(this::jButton1ActionPerformed);
+        btnAdd.setBackground(new java.awt.Color(0, 0, 76));
+        btnAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icons8-adicionar-50.png"))); // NOI18N
+        btnAdd.addActionListener(this::btnAddActionPerformed);
 
-        jButton2.setText("Homescreen");
+        btnHomescreen.setText("Homescreen");
 
-        jTextField1.setText("Procurar...");
-        jTextField1.addActionListener(this::jTextField1ActionPerformed);
+        txtPesquisa.setText("Procurar...");
+        txtPesquisa.addActionListener(this::txtPesquisaActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -145,11 +198,11 @@ public class CursoListar extends javax.swing.JFrame {
                 .addGap(47, 47, 47)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(155, 155, 155)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnHomescreen, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(pnlTabela, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(50, Short.MAX_VALUE))
         );
@@ -158,9 +211,9 @@ public class CursoListar extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(31, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnAdd)
+                    .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnHomescreen, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(pnlTabela, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18))
@@ -180,13 +233,43 @@ public class CursoListar extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+        new CursoCadastrar(this).setVisible(true);
+    }//GEN-LAST:event_btnAddActionPerformed
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtPesquisaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPesquisaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+
+        String termo = txtPesquisa.getText();
+
+        // Se o campo não estiver vazio, buscamos o termo
+        if(!termo.equals("Procurar...") && !termo.isEmpty()) {
+            try {
+                List<Curso> resultados = new CursoFind().buscarPorNome(termo);
+
+                // CRIAR UM NOVO MODELO COM OS RESULTADOS
+                String[] colunas = {"NOME CURSO", "CARGA HORÁRIA", "ATIVO", "REMOVER", "EDITAR"};
+                DefaultTableModel modelo = (DefaultTableModel) tblTabela.getModel();
+                modelo.setRowCount(0); // Limpa a tabela atual
+
+                for (Curso c : resultados) {
+                    modelo.addRow(new Object[]{
+                        c.getNome(), 
+                        c.getCargaHoraria(), 
+                        c.isAtivo(), 
+                        iconeLixeira, 
+                        iconeEditar
+                    });
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Erro na busca: " + e.getMessage());
+            }
+        } else {
+            // Se estiver vazio, volta a carregar todos os dados
+            carregarDados();
+        }
+    }//GEN-LAST:event_txtPesquisaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -214,12 +297,12 @@ public class CursoListar extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnHomescreen;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JPanel pnlTabela;
     private javax.swing.JTable tblTabela;
+    private javax.swing.JTextField txtPesquisa;
     // End of variables declaration//GEN-END:variables
 }
