@@ -1,10 +1,10 @@
+D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\curso\dao\CursoDao.java
+D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\curso\dao\CursoIDao.java
 D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\curso\entity\Curso.java
 D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\curso\view\CursoAtualizar.java
 D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\curso\view\CursoCadastrar.java
 D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\curso\view\CursoListar.java
 D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\curso\view\útil\ButtonRenderer.java
-D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\CursoDelete.java
-D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\CursoFind.java
-D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\CursoFindAll.java
-D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\CursoSave.java
-D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\CursoUpdate.java
+D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\infrastructure\dao\GenericDao.java
+D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\infrastructure\dao\GenericIDao.java
+D:\Java-AULAS\prg03joaoluislopesaraujopersistence\src\main\java\br\com\ifba\infrastructure\entity\PersistenceEntity.java

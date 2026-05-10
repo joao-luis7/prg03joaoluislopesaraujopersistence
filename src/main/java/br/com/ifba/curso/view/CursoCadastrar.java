@@ -4,7 +4,7 @@
  */
 package br.com.ifba.curso.view;
 
-import br.com.ifba.CursoSave;
+import br.com.ifba.curso.dao.CursoDao;
 import br.com.ifba.curso.entity.Curso;
 import javax.swing.JOptionPane;
 /**
@@ -13,14 +13,17 @@ import javax.swing.JOptionPane;
  */
 public class CursoCadastrar extends javax.swing.JFrame {
 
-    private CursoListar cursos; 
+    private CursoListar cursos;
+    private final CursoDao cursoDao;
+
     /**
      * Creates new form CursoCadastrar
      */
     public CursoCadastrar(CursoListar cursos) {
         initComponents();
         this.cursos = cursos;
-        
+        this.cursoDao = new CursoDao();
+
         setLocationRelativeTo(null); // inicializa o jframe no meio da tela
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE); 
     }
@@ -156,8 +159,8 @@ public class CursoCadastrar extends javax.swing.JFrame {
         novoCurso.setCargaHoraria((int)spnCH.getValue());
         novoCurso.setAtivo(cbxAtivo.isSelected());
 
-        // 2. Persistência
-        new br.com.ifba.CursoSave().salvar(novoCurso);
+        // 2. Persistência usando o DAO
+        cursoDao.save(novoCurso);
 
         JOptionPane.showMessageDialog(this, "Curso cadastrado com sucesso!");
         

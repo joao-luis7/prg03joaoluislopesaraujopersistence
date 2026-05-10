@@ -5,14 +5,13 @@
 package br.com.ifba.curso.view;
 
 import javax.swing.ImageIcon;
-import br.com.ifba.CursoFindAll;
-import br.com.ifba.CursoDelete;
-import br.com.ifba.CursoFind;
+import br.com.ifba.curso.dao.CursoDao;
 import br.com.ifba.curso.entity.Curso;
 import java.util.List;
 import javax.swing.JOptionPane;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -22,10 +21,18 @@ import javax.swing.table.DefaultTableModel;
 public class CursoListar extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CursoListar.class.getName());
-
+    private final CursoDao cursoDao;
+    
+    private ImageIcon iconeLixeira;
+    private ImageIcon iconeEditar;
     
     public CursoListar() {
         initComponents();
+        this.cursoDao = new CursoDao();
+
+        // carrega os icones originais e já os redimensiona para 32x32
+        iconeLixeira = redimensionarIcone("/images/icons8-lixo-50.png", 32, 32);
+        iconeEditar = redimensionarIcone("/images/icons8-crie-um-novo-64.png", 32, 32);
         
         tblTabela.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -34,7 +41,7 @@ public class CursoListar extends javax.swing.JFrame {
                 int coluna = tblTabela.getSelectedColumn();
                 
                 // 1. Obter a lista de cursos para saber qual objeto corresponde à linha clicada
-                List<Curso> listaCursos = new br.com.ifba.CursoFindAll().listarTodos();
+                List<Curso> listaCursos = cursoDao.findAll();
                 Curso cursoSelecionado = listaCursos.get(linha);
 
                 // 2. Lógica baseada na coluna clicada (índices 3 e 4 na nova estrutura)
@@ -42,7 +49,7 @@ public class CursoListar extends javax.swing.JFrame {
                     int confirm = javax.swing.JOptionPane.showConfirmDialog(null, 
                             "Deseja remover o curso: " + cursoSelecionado.getNome() + "?");
                     if (confirm == javax.swing.JOptionPane.YES_OPTION) {
-                        new br.com.ifba.CursoDelete().remover(cursoSelecionado.getId());
+                        cursoDao.delete(cursoSelecionado.getId());
                         carregarDados(); // Atualiza a tabela
                     }
                 } else if (coluna == 4) { // Coluna EDITAR
@@ -54,9 +61,6 @@ public class CursoListar extends javax.swing.JFrame {
         carregarDados();
     }
     
-    // carrega os icones originais e já os redimensiona para 32x32
-    ImageIcon iconeLixeira = redimensionarIcone("/images/icons8-lixo-50.png", 32, 32);
-    ImageIcon iconeEditar = redimensionarIcone("/images/icons8-crie-um-novo-64.png", 32, 32);
     
     // método auxiliar para o código não ficar repetitivo
     private ImageIcon redimensionarIcone(String caminho, int largura, int altura) {
@@ -86,7 +90,8 @@ public class CursoListar extends javax.swing.JFrame {
         };
 
         try {
-            List<Curso> lista = new CursoFindAll().listarTodos();
+            List<Curso> lista = cursoDao.findAll();
+
             for (Curso c : lista) {
                 modelo.addRow(new Object[]{
                     c.getNome(), 
@@ -239,19 +244,21 @@ public class CursoListar extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void txtPesquisaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPesquisaActionPerformed
-        // TODO add your handling code here:
-
+        // TODO add your handling code here:                                    
         String termo = txtPesquisa.getText();
 
-        // Se o campo não estiver vazio, buscamos o termo
-        if(!termo.equals("Procurar...") && !termo.isEmpty()) {
+        // Verifica se há um termo válido para busca
+        if (!termo.isEmpty() && !termo.equalsIgnoreCase("Procurar...")) {
             try {
-                List<Curso> resultados = new CursoFind().buscarPorNome(termo);
+                // CHAMADA DIRETA AO MÉTODO DO DAO
+                List<Curso> resultados = cursoDao.findByNome(termo);
 
-                // CRIAR UM NOVO MODELO COM OS RESULTADOS
-                String[] colunas = {"NOME CURSO", "CARGA HORÁRIA", "ATIVO", "REMOVER", "EDITAR"};
                 DefaultTableModel modelo = (DefaultTableModel) tblTabela.getModel();
                 modelo.setRowCount(0); // Limpa a tabela atual
+
+                if (resultados.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Nenhum curso encontrado.");
+                }
 
                 for (Curso c : resultados) {
                     modelo.addRow(new Object[]{
@@ -264,11 +271,12 @@ public class CursoListar extends javax.swing.JFrame {
                 }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Erro na busca: " + e.getMessage());
+                e.printStackTrace();
             }
         } else {
-            // Se estiver vazio, volta a carregar todos os dados
+            // Se vazio, recarrega tudo
             carregarDados();
-        }
+            }
     }//GEN-LAST:event_txtPesquisaActionPerformed
 
     /**

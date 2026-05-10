@@ -4,7 +4,7 @@
  */
 package br.com.ifba.curso.view;
 
-import br.com.ifba.CursoUpdate;
+import br.com.ifba.curso.dao.CursoDao;
 import br.com.ifba.curso.entity.Curso;
 import javax.swing.JOptionPane;
 /**
@@ -15,6 +15,8 @@ public class CursoAtualizar extends javax.swing.JFrame {
 
     private Curso cursoEditar;
     private CursoListar cursoLista;
+    private final CursoDao cursoDao;
+
     /**
      * Creates new form CursoAtualizar
      */
@@ -22,6 +24,8 @@ public class CursoAtualizar extends javax.swing.JFrame {
         initComponents();
         this.cursoEditar = cursoEditar;
         this.cursoLista = cursoLista;
+        this.cursoDao = new CursoDao();
+
         this.preencherCampos(); // Chama o método para preencher os campos da tela
         
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE); 
@@ -169,9 +173,8 @@ public class CursoAtualizar extends javax.swing.JFrame {
                 cursoEditar.setCargaHoraria((int)spnCH.getValue());
                 cursoEditar.setAtivo(cbxAtivo.isSelected());
 
-                // Instancia sua classe de persistência e salva o objeto no banco
-                CursoUpdate atualizaCurso = new CursoUpdate();
-                atualizaCurso.atualizar(cursoEditar);
+                // Atualiza usando o DAO
+                cursoDao.update(cursoEditar);
 
                 // Exibe uma mensagem de sucesso para o usuário
                 JOptionPane.showMessageDialog(this, "Curso atualizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);

@@ -4,6 +4,7 @@
  */
 package br.com.ifba.curso.entity;
 
+import br.com.ifba.infrastructure.entity.PersistenceEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,24 +17,12 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name="cursos")
-public class Curso implements Serializable{
-    
-    @Id //definir PK
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    
+public class Curso extends PersistenceEntity implements Serializable {
+   
     private String codigo; // Adicionado para bater com o txtCodigo do form
     private String nome;
     private int cargaHoraria;
     private boolean ativo;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getCodigo() {
         return codigo;
