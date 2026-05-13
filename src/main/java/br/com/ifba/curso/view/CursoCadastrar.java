@@ -7,6 +7,8 @@ package br.com.ifba.curso.view;
 import br.com.ifba.curso.dao.CursoDao;
 import br.com.ifba.curso.entity.Curso;
 import javax.swing.JOptionPane;
+import br.com.ifba.curso.controller.CursoController;
+
 /**
  *
  * @author joaol
@@ -14,7 +16,8 @@ import javax.swing.JOptionPane;
 public class CursoCadastrar extends javax.swing.JFrame {
 
     private CursoListar cursos;
-    private final CursoDao cursoDao;
+    private final CursoController controller;
+
 
     /**
      * Creates new form CursoCadastrar
@@ -22,7 +25,8 @@ public class CursoCadastrar extends javax.swing.JFrame {
     public CursoCadastrar(CursoListar cursos) {
         initComponents();
         this.cursos = cursos;
-        this.cursoDao = new CursoDao();
+        this.controller = new CursoController();
+
 
         setLocationRelativeTo(null); // inicializa o jframe no meio da tela
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE); 
@@ -146,27 +150,34 @@ public class CursoCadastrar extends javax.swing.JFrame {
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
         // TODO add your handling code here:
         try {
-            // Validação básica
+            // Validação básica de interface (apenas para garantir que o usuário preencheu os campos)
+            // As regras de negócio reais estão no Service, acessado via Controller
             if (txtNome.getText().isEmpty() || txtCodigo.getText().isEmpty() || (int)spnCH.getValue() <= 0) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos corretamente!", "Alerta", JOptionPane.WARNING_MESSAGE);
                 return;
-        }
+            }
 
-        // 1. Cria o objeto com TODOS os novos atributos
-        Curso novoCurso = new Curso();
-        novoCurso.setCodigo(txtCodigo.getText());
-        novoCurso.setNome(txtNome.getText());
-        novoCurso.setCargaHoraria((int)spnCH.getValue());
-        novoCurso.setAtivo(cbxAtivo.isSelected());
+            // 1. Cria o objeto com TODOS os novos atributos
+            Curso novoCurso = new Curso();
+            novoCurso.setCodigo(txtCodigo.getText());
+            novoCurso.setNome(txtNome.getText());
+            novoCurso.setCargaHoraria((int)spnCH.getValue());
+            novoCurso.setAtivo(cbxAtivo.isSelected());
 
-        // 2. Persistência usando o DAO
-        cursoDao.save(novoCurso);
+            // 2. Chama o Controller (que vai chamar o Service, que vai chamar o DAO)
+            // A View NÃO chama o DAO diretamente - segue a arquitetura em camadas
+            String mensagem = controller.incluir(novoCurso);
 
-        JOptionPane.showMessageDialog(this, "Curso cadastrado com sucesso!");
-        
-        // 3. Atualiza a tabela da tela principal e fecha a atual
-        this.cursos.carregarDados();
-        this.dispose();
+            // 3. Verifica se a operação foi bem-sucedida pela mensagem retornada
+            if (mensagem.contains("sucesso")) {
+                JOptionPane.showMessageDialog(this, mensagem);
+                // 4. Atualiza a tabela da tela principal e fecha a atual
+                this.cursos.carregarDados();
+                this.dispose();
+            } else {
+                // Mostra mensagem de erro retornada pelo Service
+                JOptionPane.showMessageDialog(this, mensagem, "Erro", JOptionPane.ERROR_MESSAGE);
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao cadastrar: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }

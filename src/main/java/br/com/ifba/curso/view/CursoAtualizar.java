@@ -7,6 +7,8 @@ package br.com.ifba.curso.view;
 import br.com.ifba.curso.dao.CursoDao;
 import br.com.ifba.curso.entity.Curso;
 import javax.swing.JOptionPane;
+import br.com.ifba.curso.controller.CursoController;
+
 /**
  *
  * @author joaol
@@ -15,7 +17,8 @@ public class CursoAtualizar extends javax.swing.JFrame {
 
     private Curso cursoEditar;
     private CursoListar cursoLista;
-    private final CursoDao cursoDao;
+    private final CursoController controller;
+
 
     /**
      * Creates new form CursoAtualizar
@@ -24,7 +27,8 @@ public class CursoAtualizar extends javax.swing.JFrame {
         initComponents();
         this.cursoEditar = cursoEditar;
         this.cursoLista = cursoLista;
-        this.cursoDao = new CursoDao();
+        this.controller = new CursoController();
+
 
         this.preencherCampos(); // Chama o método para preencher os campos da tela
         
@@ -173,17 +177,25 @@ public class CursoAtualizar extends javax.swing.JFrame {
                 cursoEditar.setCargaHoraria((int)spnCH.getValue());
                 cursoEditar.setAtivo(cbxAtivo.isSelected());
 
-                // Atualiza usando o DAO
-                cursoDao.update(cursoEditar);
+                // Chama o Controller (que vai chamar o Service, que vai chamar o DAO)
+                // A View NÃO chama o DAO diretamente
+                String mensagem = controller.atualizar(cursoEditar);
 
-                // Exibe uma mensagem de sucesso para o usuário
-                JOptionPane.showMessageDialog(this, "Curso atualizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                // Verifica se a operação foi bem-sucedida pela mensagem retornada
+                if (mensagem.contains("sucesso")) {
+                    // Exibe uma mensagem de sucesso para o usuário
+                    JOptionPane.showMessageDialog(this, mensagem, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+               
+
+                    // possibilita a atualização instantanea da tabela da tela inicial
+                    this.cursoLista.carregarDados();
                 
-                // possibilita a atualização instantanea da tabela da tela inicial
-                this.cursoLista.carregarDados();
-                
-                // FECHA A TELA ATUAL (A TELA DE ATUALIZAÇÃO)
-                this.dispose(); // <--- É esta linha que fecha a janela!
+                    // FECHA A TELA ATUAL (A TELA DE ATUALIZAÇÃO)
+                    this.dispose(); //  esta linha que fecha a janela!
+                } else {
+                    // Mostra mensagem de erro retornada pelo Service
+                    JOptionPane.showMessageDialog(this, mensagem, "Erro", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
         catch (Exception e){

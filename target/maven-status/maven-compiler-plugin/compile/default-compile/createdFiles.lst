@@ -9,8 +9,11 @@ br\com\ifba\curso\view\CursoCadastrar.class
 br\com\ifba\curso\view\CursoAtualizar$2.class
 br\com\ifba\curso\view\CursoListar$4.class
 br\com\ifba\infrastructure\entity\PersistenceEntity.class
+br\com\ifba\util\StringUtil.class
 br\com\ifba\curso\view\CursoCadastrar$2.class
 br\com\ifba\curso\view\útil\ButtonRenderer.class
+br\com\ifba\curso\service\CursoService.class
+br\com\ifba\curso\controller\CursoIController.class
 br\com\ifba\curso\view\CursoCadastrar$4.class
 br\com\ifba\curso\view\CursoListar$1.class
 br\com\ifba\infrastructure\dao\GenericIDao.class
@@ -18,6 +21,8 @@ br\com\ifba\curso\view\CursoAtualizar.class
 br\com\ifba\curso\entity\Curso.class
 br\com\ifba\curso\view\CursoListar$3.class
 br\com\ifba\curso\view\CursoAtualizar$4.class
+br\com\ifba\curso\service\CursoIService.class
 br\com\ifba\infrastructure\dao\GenericDao.class
 br\com\ifba\curso\view\CursoCadastrar$1.class
+br\com\ifba\curso\controller\CursoController.class
 br\com\ifba\curso\view\CursoAtualizar$1.class

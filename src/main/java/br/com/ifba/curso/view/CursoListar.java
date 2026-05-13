@@ -13,6 +13,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
+import br.com.ifba.curso.controller.CursoController;
+
 
 /**
  *
@@ -21,14 +23,14 @@ import javax.swing.table.DefaultTableModel;
 public class CursoListar extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CursoListar.class.getName());
-    private final CursoDao cursoDao;
+    private final CursoController controller;
     
     private ImageIcon iconeLixeira;
     private ImageIcon iconeEditar;
     
     public CursoListar() {
         initComponents();
-        this.cursoDao = new CursoDao();
+        this.controller = new CursoController();
 
         // carrega os icones originais e já os redimensiona para 32x32
         iconeLixeira = redimensionarIcone("/images/icons8-lixo-50.png", 32, 32);
@@ -41,7 +43,7 @@ public class CursoListar extends javax.swing.JFrame {
                 int coluna = tblTabela.getSelectedColumn();
                 
                 // 1. Obter a lista de cursos para saber qual objeto corresponde à linha clicada
-                List<Curso> listaCursos = cursoDao.findAll();
+                List<Curso> listaCursos = controller.listar();
                 Curso cursoSelecionado = listaCursos.get(linha);
 
                 // 2. Lógica baseada na coluna clicada (índices 3 e 4 na nova estrutura)
@@ -49,8 +51,13 @@ public class CursoListar extends javax.swing.JFrame {
                     int confirm = javax.swing.JOptionPane.showConfirmDialog(null, 
                             "Deseja remover o curso: " + cursoSelecionado.getNome() + "?");
                     if (confirm == javax.swing.JOptionPane.YES_OPTION) {
-                        cursoDao.delete(cursoSelecionado.getId());
-                        carregarDados(); // Atualiza a tabela
+                        // Chama o Controller (que vai chamar o Service, que vai chamar o DAO)
+                        String mensagem = controller.deletar(cursoSelecionado.getId());
+                        if (mensagem.contains("sucesso")) {
+                            carregarDados(); // Atualiza a tabela
+                        } else {
+                            JOptionPane.showMessageDialog(CursoListar.this, mensagem, "Erro", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                 } else if (coluna == 4) { // Coluna EDITAR
                     new CursoAtualizar(cursoSelecionado, CursoListar.this).setVisible(true);
@@ -90,8 +97,9 @@ public class CursoListar extends javax.swing.JFrame {
         };
 
         try {
-            List<Curso> lista = cursoDao.findAll();
-
+            // Chama o Controller para obter a lista de cursos
+            // O Controller vai chamar o Service, que vai chamar o DAO
+            List<Curso> lista = controller.listar();
             for (Curso c : lista) {
                 modelo.addRow(new Object[]{
                     c.getNome(), 
@@ -250,8 +258,8 @@ public class CursoListar extends javax.swing.JFrame {
         // Verifica se há um termo válido para busca
         if (!termo.isEmpty() && !termo.equalsIgnoreCase("Procurar...")) {
             try {
-                // CHAMADA DIRETA AO MÉTODO DO DAO
-                List<Curso> resultados = cursoDao.findByNome(termo);
+                // Chama o Controller para buscar cursos por nome
+                List<Curso> resultados = controller.buscarPorNome(termo);
 
                 DefaultTableModel modelo = (DefaultTableModel) tblTabela.getModel();
                 modelo.setRowCount(0); // Limpa a tabela atual
